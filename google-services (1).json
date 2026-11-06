@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "239306414845",
+    "firebase_url": "https://amicor-c35cd-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "amicor-c35cd",
+    "storage_bucket": "amicor-c35cd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:239306414845:android:358539e07e1e812a8f3c94",
+        "android_client_info": {
+          "package_name": "com.amicor.dating"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXcxI7Lv_afHXmeNH663nWiQpunXyGAcw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
