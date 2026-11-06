@@ -4,196 +4,80 @@ package com.amicor.dating
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
-
-private val Rose = Color(0xFFE83E70)
-private val Ink = Color(0xFF241B2F)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { AmicorApp() }
-    }
-}
 
-@Composable
-fun AmicorApp() {
-    var page by remember { mutableStateOf("home") }
-    var language by remember { mutableStateOf("English") }
-    val isBangla = language == "বাংলা"
-
-    MaterialTheme(
-        colorScheme = lightColorScheme(
-            primary = Rose,
-            secondary = Color(0xFF8B5CF6),
-            background = Color(0xFFFFF8FA),
-            surface = Color.White
-        )
-    ) {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = Color(0xFFFFF8FA)
-        ) {
-            when (page) {
-                "signup" -> AuthPage(
-                    title = if (isBangla) "অ্যাকাউন্ট তৈরি করুন" else "Create your account",
-                    button = if (isBangla) "অ্যাকাউন্ট তৈরি করুন" else "Create account",
-                    isSignup = true,
-                    isBangla = isBangla,
-                    onBack = { page = "home" },
-                    onSuccess = { page = "home" }
-                )
-
-                "login" -> AuthPage(
-                    title = if (isBangla) "আবার স্বাগতম" else "Welcome back",
-                    button = if (isBangla) "লগ ইন" else "Log in",
-                    isSignup = false,
-                    isBangla = isBangla,
-                    onBack = { page = "home" },
-                    onSuccess = { page = "home" }
-                )
-
-                else -> HomePage(
-                    isBangla = isBangla,
-                    language = language,
-                    onLanguage = { language = it },
-                    onSignup = { page = "signup" },
-                    onLogin = { page = "login" }
-                )
+        setContent {
+            MaterialTheme {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    AuthPage()
+                }
             }
         }
     }
 }
 
 @Composable
-fun HomePage(
-    isBangla: Boolean,
-    language: String,
-    onLanguage: (String) -> Unit,
-    onSignup: () -> Unit,
-    onLogin: () -> Unit
-) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Box(
-            modifier = Modifier.size(104.dp).background(
-                Brush.linearGradient(listOf(Rose, Color(0xFF8B5CF6))),
-                RoundedCornerShape(30.dp)
-            ),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                Icons.Default.Favorite,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(54.dp)
-            )
-        }
+fun AuthPage() {
+    val auth = remember { FirebaseAuth.getInstance() }
 
-        Spacer(Modifier.height(22.dp))
-        Text("AMICOR", fontSize = 34.sp, fontWeight = FontWeight.ExtraBold, color = Ink)
-        Text(
-            if (isBangla) "আপনার পৃথিবীর মানুষের সঙ্গে পরিচিত হন ❤️"
-            else "Meet your world ❤️",
-            fontSize = 16.sp,
-            color = Color(0xFF6B6472),
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(Modifier.height(30.dp))
-        Button(onClick = onSignup, modifier = Modifier.fillMaxWidth().height(54.dp)) {
-            Text(if (isBangla) "অ্যাকাউন্ট তৈরি করুন" else "Create account")
-        }
-
-        Spacer(Modifier.height(12.dp))
-        OutlinedButton(onClick = onLogin, modifier = Modifier.fillMaxWidth().height(54.dp)) {
-            Text(if (isBangla) "লগ ইন" else "Log in")
-        }
-
-        Spacer(Modifier.height(24.dp))
-        Text(if (isBangla) "ভাষা" else "Language", color = Color.Gray)
-
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            FilterChip(
-                selected = language == "English",
-                onClick = { onLanguage("English") },
-                label = { Text("English") }
-            )
-            FilterChip(
-                selected = language == "বাংলা",
-                onClick = { onLanguage("বাংলা") },
-                label = { Text("বাংলা") }
-            )
-        }
-
-        Spacer(Modifier.height(20.dp))
-        Text(
-            if (isBangla) "বিশ্বজুড়ে সংযোগ, সম্মান ও নিরাপত্তার সঙ্গে।"
-            else "Connect worldwide, with respect and safety.",
-            fontSize = 12.sp,
-            color = Color.Gray,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
-fun AuthPage(
-    title: String,
-    button: String,
-    isSignup: Boolean,
-    isBangla: Boolean,
-    onBack: () -> Unit,
-    onSuccess: () -> Unit
-) {
+    var isLogin by remember { mutableStateOf(false) }
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var confirm by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
 
-    val auth = remember { FirebaseAuth.getInstance() }
-
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        TextButton(onClick = onBack) {
-            Text(if (isBangla) "← ফিরে যান" else "← Back")
-        }
+        Text(
+            text = "AMICOR",
+            style = MaterialTheme.typography.headlineLarge
+        )
 
-        Text(title, fontSize = 27.sp, fontWeight = FontWeight.Bold, color = Ink)
-        Spacer(Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
-        if (isSignup) {
+        Text(
+            text = if (isLogin) "Login" else "Create Account",
+            style = MaterialTheme.typography.headlineSmall
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (!isLogin) {
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text(if (isBangla) "নাম" else "Name") },
+                label = { Text("Your Name") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
-            Spacer(Modifier.height(10.dp))
+
+            Spacer(modifier = Modifier.height(10.dp))
         }
 
         OutlinedTextField(
@@ -204,64 +88,48 @@ fun AuthPage(
             singleLine = true
         )
 
-        Spacer(Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text(if (isBangla) "পাসওয়ার্ড" else "Password") },
+            label = { Text("Password (minimum 6 characters)") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
 
-        if (isSignup) {
-            Spacer(Modifier.height(10.dp))
-            OutlinedTextField(
-                value = confirm,
-                onValueChange = { confirm = it },
-                label = { Text(if (isBangla) "পাসওয়ার্ড নিশ্চিত করুন" else "Confirm password") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-        }
-
-        Spacer(Modifier.height(12.dp))
-
-        if (message.isNotEmpty()) {
-            Text(message, color = Rose, fontSize = 13.sp)
-            Spacer(Modifier.height(8.dp))
-        }
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = {
-                if (loading) return@Button
-
-                message = ""
-
                 if (email.isBlank() || password.isBlank() ||
-                    (isSignup && (name.isBlank() || confirm.isBlank()))
+                    (!isLogin && name.isBlank())
                 ) {
-                    message = if (isBangla) "সব ঘর পূরণ করুন।" else "Please fill in all fields."
-                    return@Button
-                }
+                    message = "Please fill in all fields."
+                } else if (password.length < 6) {
+                    message = "Password must be at least 6 characters."
+                } else {
+                    loading = true
+                    message = ""
 
-                if (isSignup && password.length < 6) {
-                    message = if (isBangla) "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।"
-                    else "Password must be at least 6 characters."
-                    return@Button
-                }
-
-                if (isSignup && password != confirm) {
-                    message = if (isBangla) "দুটি পাসওয়ার্ড মিলছে না।"
-                    else "Passwords do not match."
-                    return@Button
-                }
-
-                loading = true
-
-                if (isSignup) {
-                    auth.createUserWithEmailAndPassword(email.trim(), password)
-                        .addOnCompleteListener { task ->
+                    if (isLogin) {
+                        auth.signInWithEmailAndPassword(
+                            email.trim(),
+                            password
+                        ).addOnCompleteListener { task ->
+                            loading = false
+                            message = if (task.isSuccessful) {
+                                "Login successful!"
+                            } else {
+                                task.exception?.localizedMessage
+                                    ?: "Login failed."
+                            }
+                        }
+                    } else {
+                        auth.createUserWithEmailAndPassword(
+                            email.trim(),
+                            password
+                        ).addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 val profile = userProfileChangeRequest {
                                     displayName = name.trim()
@@ -270,11 +138,10 @@ fun AuthPage(
                                 auth.currentUser?.updateProfile(profile)
                                     ?.addOnCompleteListener { profileTask ->
                                         loading = false
-                                        if (profileTask.isSuccessful) {
-                                            onSuccess()
+                                        message = if (profileTask.isSuccessful) {
+                                            "Account created successfully!"
                                         } else {
-                                            message = profileTask.exception?.localizedMessage
-                                                ?: "Account created, but name could not be saved."
+                                            "Account created, but name could not be saved."
                                         }
                                     } ?: run {
                                     loading = false
@@ -286,31 +153,38 @@ fun AuthPage(
                                     ?: "Account creation failed."
                             }
                         }
-                } else {
-                    auth.signInWithEmailAndPassword(email.trim(), password)
-                        .addOnCompleteListener { task ->
-                            loading = false
-                            if (task.isSuccessful) {
-                                onSuccess()
-                            } else {
-                                message = task.exception?.localizedMessage
-                                    ?: "Login failed."
-                            }
-                        }
+                    }
                 }
             },
-            modifier = Modifier.fillMaxWidth().height(52.dp),
+            modifier = Modifier.fillMaxWidth(),
             enabled = !loading
         ) {
-            if (loading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(22.dp),
-                    color = Color.White,
-                    strokeWidth = 2.dp
-                )
-            } else {
-                Text(button)
-            }
+            Text(
+                if (loading) "Please wait..."
+                else if (isLogin) "Login"
+                else "Create Account"
+            )
         }
+
+        TextButton(
+            onClick = {
+                isLogin = !isLogin
+                message = ""
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !loading
+        ) {
+            Text(
+                if (isLogin) {
+                    "Create a new account"
+                } else {
+                    "Already have an account? Login"
+                }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Text(text = message)
     }
 }
