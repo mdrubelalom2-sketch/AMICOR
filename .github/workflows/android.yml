@@ -33,10 +33,18 @@ jobs:
           unzip -q AMICOR_Android_Project.zip -d project
 
       - name: Build APK
-      
         run: |
           PROJECT_DIR="$(dirname "$(find project -name settings.gradle.kts -print -quit)")"
           echo "Building from $PROJECT_DIR"
+          BUILD_FILE="$PROJECT_DIR/app/build.gradle.kts"
+          sed -i '/^android {/a\
+              compileOptions {\
+                  sourceCompatibility = JavaVersion.VERSION_17\
+                  targetCompatibility = JavaVersion.VERSION_17\
+              }\
+              kotlinOptions {\
+                  jvmTarget = "17"\
+              }' "$BUILD_FILE"
           gradle -p "$PROJECT_DIR" assembleDebug
       - name: Save APK
         uses: actions/upload-artifact@v4
