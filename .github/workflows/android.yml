@@ -33,9 +33,11 @@ jobs:
           unzip -q AMICOR_Android_Project.zip -d project
 
       - name: Build APK
-        run: PROJECT_DIR="$(dirname "$(find project -name settings.gradle.kts -print -quit)")"
-echo "Building from $PROJECT_DIR"
-gradle -p "$PROJECT_DIR" assembleDebug
+        run:       - name: Build APK
+        run: |
+          PROJECT_DIR="$(dirname "$(find project -name settings.gradle.kts -print -quit)")"
+          echo "Building from $PROJECT_DIR"
+          gradle -p "$PROJECT_DIR" assembleDebug
       - name: Save APK
         uses: actions/upload-artifact@v4
         with:
