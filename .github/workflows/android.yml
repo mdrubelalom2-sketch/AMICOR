@@ -1,0 +1,42 @@
+
+name: Build AMICOR APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/android.yml'
+      - 'AMICOR_Android_Project.zip'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get project files
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Extract AMICOR project
+        run: |
+          mkdir project
+          unzip -q AMICOR_Android_Project.zip -d project
+
+      - name: Build APK
+        run: gradle -p project assembleDebug
+
+      - name: Save APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: AMICOR-APK
+          path: project/app/build/outputs/apk/debug/app-debug.apk
